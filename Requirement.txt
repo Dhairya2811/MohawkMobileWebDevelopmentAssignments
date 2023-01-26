@@ -1,0 +1,25 @@
+ - Contain at least 4 pages.
+ - Contain at least 3 posts.
+ - Embed a video on at least one post or page.
+ - Use an image on at least one post or page.
+ - Use a link to an external website on at least one post or page.
+ - At least one page must contain an HTML table containing a schedule.
+ - At least one page must contain an embedded map (e.g. Google, Bing) showing the
+location of the coffee shop. Use a plugin or embed link for the map.
+ - At least one page must contain an event calendar. use an event calendar plugin. Populate the event calendar with a few events.
+ - Use at least three plugins total (i.e. at least three plugins including any map and eventplugins).
+ - The website must display professionally and accurately on both desktop and mobiledevices.
+ - You must create a child theme.
+    - The child theme must make at least 4 changes to CSS styles.
+    - The child theme must alter at least one template of your choosing (header, footer,etc.).
+    - The child theme must be different from and have a different parent theme than thechild them demonstrations(s) done in-class.
+ 
+
+
+Page 1: Map, contact info
+	
+Page 2: The coffee shop hosts regular events like music acts, poetry readings and othercommunity events. They would like an event calendar to display these events.
+
+Page 3: Schdule table, menu
+
+Page 4: Blog or newz, video, Images
