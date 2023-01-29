@@ -24,6 +24,22 @@
                 },
                 zoom: 12,
             });
+
+            var data = {};
+            fetch("./data/data.json")
+            .then(res => res.json())
+            .then(res =>{
+                res.features.forEach( element => {
+                    // console.log(element.properties.LATITUDE)
+                    // console.log(element.properties.LONGITUDE)
+                    var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                    const marker = new google.maps.Marker({
+                        position: point,
+                        map: map,
+                    });
+                });
+                // console.log(res.features.geometry.coordinates);
+            });
         }
     </script>
 </body>
