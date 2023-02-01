@@ -24,33 +24,40 @@
                 },
                 zoom: 12,
             });
-
-            var firstData = {};
+            const infoWindow = new google.maps.InfoWindow();
             fetch("./data/educationalInstitutionData.json")
             .then(res => res.json())
             .then(res =>{
                 res.features.forEach( element => {
-                    // console.log(element.properties.LATITUDE)
-                    // console.log(element.properties.LONGITUDE)
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                    var info = `<div>
+                            <h1>${element.properties.NAME}</h1>
+                            <p>${element.properties.ADDRESS}, ${element.properties.COMMUNITY}.</p>
+                        </div>`;
                     const marker = new google.maps.Marker({
                         position: point,
+                        icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
                         map: map,
                     });
+                    infoWindow.setContent(info);
+                    marker.addListener("click", () => {
+                        infoWindow.close();
+                        infoWindow.open({
+                            anchor: marker,
+                            map,
+                        });
+                    });
                 });
-                // console.log(res.features.geometry.coordinates);
             });
-
-            var secondData = {};
-            fetch(".data/waterfallsData.json")
+            
+            fetch("./data/waterfallsData.json")
             .then(res => res.json())
             .then(res =>{
                 res.features.forEach( element => {
-                    // console.log(element.properties.LATITUDE)
-                    // console.log(element.properties.LONGITUDE)
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
                     const marker = new google.maps.Marker({
                         position: point,
+                        icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
                         map: map,
                     });
                 });
