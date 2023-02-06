@@ -38,10 +38,10 @@
                         position: point,
                         icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
                         map: map,
+                        buborek: info
                     });
-                    infoWindow.setContent(info);
-                    marker.addListener("click", () => {
-                        infoWindow.close();
+                    google.maps.event.addListener(marker, "click", function(){
+                        infoWindow.setContent(this.buborek);
                         infoWindow.open({
                             anchor: marker,
                             map,
@@ -54,11 +54,23 @@
             .then(res => res.json())
             .then(res =>{
                 res.features.forEach( element => {
-                    var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                    var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)};
+                    var info = `<div>
+                            <h1>${element.properties.NAME}</h1>
+                            <p>${element.properties.ADDRESS}, ${element.properties.COMMUNITY}.</p>
+                        </div>`;
                     const marker = new google.maps.Marker({
                         position: point,
                         icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
                         map: map,
+                        buborek: info
+                    });
+                    google.maps.event.addListener(marker, "click", function(){
+                        infoWindow.setContent(this.buborek);
+                        infoWindow.open({
+                            anchor: marker,
+                            map,
+                        });
                     });
                 });
                 // console.log(res.features.geometry.coordinates);
