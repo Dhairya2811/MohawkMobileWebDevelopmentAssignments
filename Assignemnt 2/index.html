@@ -5,17 +5,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assignment 2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <style>
         #map{
             height: 97vh;
             width: 98vw;
+            position: absolute;
+        }
+        #feature{
+            position: absolute;
+            margin-top: 1em;
+        }
+        #buttons{
+
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <div id="feature" class="container">
+        <div id="buttons">
+            <div class="form-check">
+                <input class="btn btn-secondary" type="button" value="Show All" id="showallbtn" />
+            </div>
+            <div class="form-check">
+                <input class="btn btn-info" type="button" value="Water Falls" id="waterfallbtn" />
+            </div>
+            <div class="form-check">
+                <input class="btn btn-warning" type="button" value="Education Institution" id="educationalbtn" />
+            </div>
+        </div>
+    </div>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB2gE7215cKAtMfOK6mfhbCnNztVD-als&callback=initMap"></script>
-    <script>
+    <script>        
+        var waterfall_markers = [];
+        var educational_markers = [];
+        
         function initMap(){
             map=new google.maps.Map(document.getElementById("map"),{
                 center:{
@@ -24,11 +49,41 @@
                 },
                 zoom: 12,
             });
+            function educationFilter(){
+                clearMarker();
+                educational_markers.forEach(element => {
+                    element.setMap(map);
+                });
+            };
+            function waterFallFilter(){
+                clearMarker();
+                waterfall_markers.forEach(element => {
+                    element.setMap(map);
+                });
+            };
+            function showall(){
+                educational_markers.forEach(element => {
+                    element.setMap(map);
+                });
+                waterfall_markers.forEach(element => {
+                    element.setMap(map);
+                });
+            }
+            document.getElementById("waterfallbtn").addEventListener("click", function(){
+                waterFallFilter();
+            });
+            document.getElementById("educationalbtn").addEventListener("click", function(){
+                educationFilter();
+            });
+            document.getElementById("showallbtn").addEventListener("click", function(){
+                showall();
+            });
+
             const infoWindow = new google.maps.InfoWindow();
             fetch("./data/educationalInstitutionData.json")
             .then(res => res.json())
-            .then(res =>{
-                res.features.forEach( element => {
+            .then(async res =>{
+                await res.features.forEach( element => {
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
                     var info = `<div>
                             <h1>${element.properties.NAME}</h1>
@@ -40,6 +95,7 @@
                         map: map,
                         buborek: info
                     });
+                    educational_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
                         infoWindow.setContent(this.buborek);
                         infoWindow.open({
@@ -65,6 +121,7 @@
                         map: map,
                         buborek: info
                     });
+                    waterfall_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
                         infoWindow.setContent(this.buborek);
                         infoWindow.open({
@@ -75,6 +132,14 @@
                 });
                 // console.log(res.features.geometry.coordinates);
             });
+            function clearMarker(){
+                waterfall_markers.forEach(element => {
+                    element.setMap(null);
+                });
+                educational_markers.forEach(element=>{
+                    element.setMap(null);
+                });
+            }
         }
     </script>
 </body>
