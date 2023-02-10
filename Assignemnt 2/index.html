@@ -34,41 +34,41 @@
                 zoom: 12,
             });
 
-            var firstData = {};
-            fetch("./data/educationalInstitutionData.json")
-            .then(res => res.json())
-            .then(res =>{
-                res.features.forEach( element => {
-                    // console.log(element.properties.LATITUDE)
-                    // console.log(element.properties.LONGITUDE)
-                    var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
-                    const marker = new google.maps.Marker({
-                        position: point,
-                        icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
-                        map: map,
-                    });
-                    markers.push(marker);
-                });
-                // console.log(res.features.geometry.coordinates);
-            });
+              var firstData = {};
+              fetch("./data/educationalInstitutionData.json")
+              .then(res => res.json())
+              .then(res =>{
+                  res.features.forEach( element => {
+                      // console.log(element.properties.LATITUDE)
+                      // console.log(element.properties.LONGITUDE)
+                      var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                      const marker = new google.maps.Marker({
+                          position: point,
+                          icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+                          map: map,
+                      });
+                      markers.push(marker);
+                  });
+                  // console.log(res.features.geometry.coordinates);
+              });
 
-            var secondData = {};
-            fetch("./data/waterfallsData.json")
-            .then(res => res.json())
-            .then(res =>{
-                res.features.forEach( element => {
-                    // console.log(element.properties.LATITUDE)
-                    // console.log(element.properties.LONGITUDE)
-                    var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
-                    const marker = new google.maps.Marker({
-                        position: point,
-                        icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                        map: map,
-                    });
-                    markers.push(marker);
-                });
-                // console.log(res.features.geometry.coordinates);
-            });
+              var secondData = {};
+              fetch("./data/waterfallsData.json")
+              .then(res => res.json())
+              .then(res =>{
+                  res.features.forEach( element => {
+                      // console.log(element.properties.LATITUDE)
+                      // console.log(element.properties.LONGITUDE)
+                      var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                      const marker = new google.maps.Marker({
+                          position: point,
+                          icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                          map: map,
+                      });
+                      markers.push(marker);
+                  });
+                  // console.log(res.features.geometry.coordinates);
+              });
 
             const input = document.getElementById("pac-input");
   const searchBox = new google.maps.places.SearchBox(input);
