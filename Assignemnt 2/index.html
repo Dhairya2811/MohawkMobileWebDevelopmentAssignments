@@ -5,11 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assignment 2</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+=======
+>>>>>>> origin/Assignment_2_searchbar
     <style>
         #map{
             height: 97vh;
             width: 98vw;
+<<<<<<< HEAD
             position: absolute;
         }
         #feature{
@@ -19,10 +23,13 @@
         }
         #buttons{
             display: grid;
+=======
+>>>>>>> origin/Assignment_2_searchbar
         }
     </style>
 </head>
 <body>
+<<<<<<< HEAD
     <div id="map"></div>
     <div id="feature" class="container">
         <div id="buttons">
@@ -42,6 +49,20 @@
         var waterfall_markers = [];
         var educational_markers = [];
         
+=======
+    <input
+    id="pac-input"
+    class="controls"
+    type="text"
+    placeholder="Search Box"
+  />
+    <div id="map"></div>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB2gE7215cKAtMfOK6mfhbCnNztVD-als&callback=initMap&libraries=places"></script>
+    <script>
+      
+
+      var markers = [];
+>>>>>>> origin/Assignment_2_searchbar
         function initMap(){
             map=new google.maps.Map(document.getElementById("map"),{
                 center:{
@@ -50,6 +71,7 @@
                 },
                 zoom: 12,
             });
+<<<<<<< HEAD
             function educationFilter(){
                 clearMarker();
                 educational_markers.forEach(element => {
@@ -142,6 +164,120 @@
                 });
             }
         }
+=======
+
+              var firstData = {};
+              fetch("./data/educationalInstitutionData.json")
+              .then(res => res.json())
+              .then(res =>{
+                  res.features.forEach( element => {
+                      // console.log(element.properties.LATITUDE)
+                      // console.log(element.properties.LONGITUDE)
+                      var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                      const marker = new google.maps.Marker({
+                          position: point,
+                          icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+                          map: map,
+                      });
+                      markers.push(marker);
+                  });
+                  // console.log(res.features.geometry.coordinates);
+              });
+
+              var secondData = {};
+              fetch("./data/waterfallsData.json")
+              .then(res => res.json())
+              .then(res =>{
+                  res.features.forEach( element => {
+                      // console.log(element.properties.LATITUDE)
+                      // console.log(element.properties.LONGITUDE)
+                      var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
+                      const marker = new google.maps.Marker({
+                          position: point,
+                          icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                          map: map,
+                      });
+                      markers.push(marker);
+                  });
+                  // console.log(res.features.geometry.coordinates);
+              });
+
+            const input = document.getElementById("pac-input");
+  const searchBox = new google.maps.places.SearchBox(input);
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener("bounds_changed", () => {
+    searchBox.setBounds(map.getBounds());
+  });
+
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBox.addListener("places_changed", () => {
+    const places = searchBox.getPlaces();
+    clearMarkers();
+    if (places.length == 0) {
+      return;
+    }
+
+    // Clear out the old markers
+    // For each place, get the icon, name and location.
+    const bounds = new google.maps.LatLngBounds();
+
+    places.forEach((place) => {
+      if (!place.geometry || !place.geometry.location) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+
+      const icon = {
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25),
+      };
+
+      // Create a marker for each place.
+      markers.push(
+        new google.maps.Marker({
+          map,
+          icon,
+          title: place.name,
+          position: place.geometry.location,
+        })
+      );
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+      
+    });
+    map.fitBounds(bounds);
+
+   // marker.setMap(null);
+  });
+
+  //marker.setMap(null);
+  function clearMarkers() {
+    console.log(markers);
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);  //markerToBeRemoved.setMap(null);
+    }
+  }
+}
+
+
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+    }
+//window.initAutocomplete = initAutocomplete;
+>>>>>>> origin/Assignment_2_searchbar
     </script>
 </body>
 </html>
