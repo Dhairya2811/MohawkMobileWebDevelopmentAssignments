@@ -148,6 +148,14 @@
                 });
             }
             const input = document.getElementById("pac-input");
+            input.addEventListener("input", ()=>{
+                if(input.value.length == 0){
+                    showall();
+                    map.setZoom(12);
+                    var location = new google.maps.LatLng(43.2387, -79.8881);
+                    map.setCenter(location);
+                }
+            });
             const searchBox = new google.maps.places.SearchBox(input);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
             // Bias the SearchBox results towards current map's viewport.
@@ -156,7 +164,7 @@
             });
             searchBox.addListener("places_changed", () => {
                 const places = searchBox.getPlaces();
-                clearMarkers();
+                clearMarker();
                 if (places.length == 0) {
                     return;
                 }
