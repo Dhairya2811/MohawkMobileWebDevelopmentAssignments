@@ -146,10 +146,14 @@
                 educational_markers.forEach(element=>{
                     element.setMap(null);
                 });
+                markers.forEach(element=>{
+                    element.setMap(null);
+                });
             }
             const input = document.getElementById("pac-input");
             input.addEventListener("input", ()=>{
                 if(input.value.length == 0){
+                    clearMarker();
                     showall();
                     map.setZoom(12);
                     var location = new google.maps.LatLng(43.2387, -79.8881);
