@@ -116,7 +116,10 @@
 
             // clear all the markers and show only educational institutions' markers
             function educationFilter(){
+                clearSearchBox();
                 clearMarker();
+                directionsRenderer.setMap(null);
+                document.getElementById("sidebar").style.display = "none";
                 educational_markers.forEach(element => {
                     element.setMap(map);
                 });
@@ -124,7 +127,10 @@
 
             // clear all the markers and show only waterfalls' markers
             function waterFallFilter(){
+                clearSearchBox();
                 clearMarker();
+                directionsRenderer.setMap(null);
+                document.getElementById("sidebar").style.display = "none";
                 waterfall_markers.forEach(element => {
                     element.setMap(map);
                 });
@@ -134,6 +140,9 @@
             function showall(){
                 clearMarker();
                 map.setZoom(12);
+                clearSearchBox();
+                document.getElementById("sidebar").style.display = "none";
+                directionsRenderer.setMap(null);
                 var location = new google.maps.LatLng(43.2387, -79.8881);
                 map.setCenter(location);
                 educational_markers.forEach(element => {
@@ -298,6 +307,9 @@
                     map.setCenter(location);
                 }
             });
+            function clearSearchBox(){
+                input.value = "";
+            }
             const searchBox = new google.maps.places.SearchBox(input);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
             // Bias the SearchBox results towards current map's viewport.
