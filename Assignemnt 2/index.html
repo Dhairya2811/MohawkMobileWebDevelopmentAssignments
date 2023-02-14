@@ -23,6 +23,20 @@
             width: 75%;
             margin-top: 12px;
         }
+        #sidebar {
+            flex-basis: 40rem;
+            flex-grow: 2;
+            padding: 1rem;
+            max-width: 40rem;
+            height: 90vh;
+            box-sizing: border-box;
+            overflow:scroll;
+            display: none;
+        }
+        #container {
+            height: 100%;
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -40,16 +54,24 @@
             <div class="form-check">
                 <input class="btn btn-warning" type="button" value="Education Institution" id="educationalbtn" />
             </div>
+            <div class="form-check">
+                <input class="btn btn-primary disabled" type="button" value="Get Direction" id="getDirectionBtn" />
+            </div>
         </div>
     </div>
-    <div id="map"></div>
+    <div id="container">
+        <div id="map"></div>
+        <div id="sidebar"></div>
+    </div>
 
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB2gE7215cKAtMfOK6mfhbCnNztVD-als&callback=initMap&libraries=places"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB2gE7215cKAtMfOK6mfhbCnNztVD-als&callback=initMap&libraries=places&v=weekly"
+      defer"></script>
     <script>        
         var waterfall_markers = [];
         var educational_markers = [];
         var markers = [];
         var userLocation = [];
+        var currentMarkerLocation = [];
         var userLocationMarker = [];
         function initMap(){
 
@@ -67,6 +89,7 @@
                 navigator.geolocation.getCurrentPosition((position)=>{
                     userLocation.push(position.coords.latitude);
                     userLocation.push(position.coords.longitude);
+                    // adding the user location marker after 0.5 sec.
                     setTimeout(()=>{
                         var info = `<div>
                             <h4>Your Location</h4>
@@ -109,6 +132,10 @@
 
             // clear all the markers and show only educational institutions' markers and waterfalls' markers
             function showall(){
+                clearMarker();
+                map.setZoom(12);
+                var location = new google.maps.LatLng(43.2387, -79.8881);
+                map.setCenter(location);
                 educational_markers.forEach(element => {
                     element.setMap(map);
                 });
@@ -128,6 +155,37 @@
                 markers.forEach(element=>{
                     element.setMap(null);
                 });
+            }
+
+            
+            // getting the route from the user location to the destination
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+            const directionsService = new google.maps.DirectionsService();
+            directionsRenderer.setMap(map);
+            directionsRenderer.setPanel(document.getElementById("sidebar"));
+            document.getElementById("getDirectionBtn").addEventListener("click", ()=>{
+                if(currentMarkerLocation.length !== 0){
+                    getDirectionClick();
+                }
+            });
+            function getDirectionClick(){
+                document.getElementById("sidebar").style.display = "block";
+                calculateAndDisplayRoute(directionsService, directionsRenderer);
+            }
+            function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+                const start = new google.maps.LatLng(userLocation[0], userLocation[1]);
+                const end = new google.maps.LatLng(currentMarkerLocation[0], currentMarkerLocation[1]);
+
+                directionsService
+                    .route({
+                    origin: start,
+                    destination: end,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    })
+                    .then((response) => {
+                    directionsRenderer.setDirections(response);
+                    })
+                    .catch((e) => window.alert("Directions request failed due to " + status));
             }
 
             // adding the click listener for waterfall button to show only waterfalls 
@@ -169,12 +227,22 @@
                     });
                     educational_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
+                        document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        currentMarkerLocation = [];
+                        currentMarkerLocation.push(parseFloat(element.properties.LATITUDE));
+                        currentMarkerLocation.push(parseFloat(element.properties.LONGITUDE));
                         infoWindow.setContent(this.buborek);
                         infoWindow.open({
                             anchor: marker,
                             map,
                         });
                     });
+                    google.maps.event.addListener(infoWindow, "closeclick", function(){
+                        document.getElementById("sidebar").style.display = "none";
+                        directionsRenderer.setMap(null);
+                        document.getElementById("getDirectionBtn").classList.add("disabled");
+                        currentMarkerLocation = [];
+                    })
                 });
             });
             
@@ -185,10 +253,12 @@
             .then(res =>{
                 res.features.forEach( element => {
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)};
+                    
                     var info = `<div>
                             <h3>${element.properties.NAME}</h4>
-                            <p>${element.properties.ADDRESS}, ${element.properties.COMMUNITY}.</p>
+                            <p>${element.properties.COMMUNITY}.</p>
                         </div>`;
+                    
                     const marker = new google.maps.Marker({
                         animation: google.maps.Animation.DROP,
                         position: point,
@@ -198,12 +268,22 @@
                     });
                     waterfall_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
+                        document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        currentMarkerLocation = [];
+                        currentMarkerLocation.push(parseFloat(element.properties.LATITUDE));
+                        currentMarkerLocation.push(parseFloat(element.properties.LONGITUDE));
                         infoWindow.setContent(this.buborek);
                         infoWindow.open({
                             anchor: marker,
                             map,
                         });
                     });
+                    google.maps.event.addListener(infoWindow, "closeclick", function(){
+                        document.getElementById("sidebar").style.display = "none";
+                        directionsRenderer.setMap(null);
+                        document.getElementById("getDirectionBtn").classList.add("disabled");
+                        currentMarkerLocation = [];
+                    })
                 });
             });
 
@@ -226,6 +306,7 @@
             });
             searchBox.addListener("places_changed", () => {
                 const places = searchBox.getPlaces();
+                
                 clearMarker();
                 if (places.length == 0) {
                     return;
@@ -236,6 +317,9 @@
                 if (!place.geometry || !place.geometry.location) {
                     return;
                 }
+                var info = `<div>
+                    <h6>${places[0].formatted_address}</h6>
+                </div>`;
 
                 const icon = {
                     url: place.icon,
@@ -244,14 +328,31 @@
                     anchor: new google.maps.Point(17, 34),
                     scaledSize: new google.maps.Size(25, 25),
                 };
-                markers.push(
-                    new google.maps.Marker({
+                var marker = new google.maps.Marker({
                     map,
                     icon,
                     title: place.name,
                     position: place.geometry.location,
-                    })
-                );
+                    buborek: info,
+                });
+                markers.push(marker);
+                google.maps.event.addListener(marker, "click", function(){
+                    document.getElementById("getDirectionBtn").classList.remove("disabled");
+                    currentMarkerLocation = [];
+                    currentMarkerLocation.push(parseFloat(marker.getPosition().lat()));
+                    currentMarkerLocation.push(parseFloat(marker.getPosition().lng()));
+                    infoWindow.setContent(this.buborek);
+                    infoWindow.open({
+                        anchor: marker,
+                        map,
+                    });
+                });
+                google.maps.event.addListener(infoWindow, "closeclick", function(){
+                    document.getElementById("sidebar").style.display = "none";
+                    directionsRenderer.setMap(null);
+                    document.getElementById("getDirectionBtn").classList.add("disabled");
+                    currentMarkerLocation = [];
+                })
                 if (place.geometry.viewport) {
                     bounds.union(place.geometry.viewport);
                 } else {
