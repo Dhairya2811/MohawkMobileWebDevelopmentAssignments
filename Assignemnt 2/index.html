@@ -49,7 +49,11 @@
         var waterfall_markers = [];
         var educational_markers = [];
         var markers = [];
+        var userLocation = [];
+        var userLocationMarker = [];
         function initMap(){
+
+            // setting up the map with center in Hamilton, ON and with the zoom level of 12.
             map=new google.maps.Map(document.getElementById("map"),{
                 center:{
                     lat: 43.2387,
@@ -57,18 +61,53 @@
                 },
                 zoom: 12,
             });
+
+            // getting the location of the user.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position)=>{
+                    userLocation.push(position.coords.latitude);
+                    userLocation.push(position.coords.longitude);
+                    setTimeout(()=>{
+                        var info = `<div>
+                            <h4>Your Location</h4>
+                        </div>`;
+                        const marker = new google.maps.Marker({
+                            map,
+                            position: {lat: position.coords.latitude, lng: position.coords.longitude},
+                            animation: google.maps.Animation.DROP,
+                            buborek: info,
+                        });
+                        userLocationMarker.push(marker);
+                        google.maps.event.addListener(marker, "click", function(){
+                            infoWindow.setContent(this.buborek);
+                            infoWindow.open({
+                                anchor: marker,
+                                map,
+                            });
+                        });
+                    }, 500);                    
+                });
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+
+            // clear all the markers and show only educational institutions' markers
             function educationFilter(){
                 clearMarker();
                 educational_markers.forEach(element => {
                     element.setMap(map);
                 });
             };
+
+            // clear all the markers and show only waterfalls' markers
             function waterFallFilter(){
                 clearMarker();
                 waterfall_markers.forEach(element => {
                     element.setMap(map);
                 });
             };
+
+            // clear all the markers and show only educational institutions' markers and waterfalls' markers
             function showall(){
                 educational_markers.forEach(element => {
                     element.setMap(map);
@@ -76,28 +115,53 @@
                 waterfall_markers.forEach(element => {
                     element.setMap(map);
                 });
+            }          
+            
+            // this function will erase all the markers including the searched place's marker.
+            function clearMarker(){
+                waterfall_markers.forEach(element => {
+                    element.setMap(null);
+                });
+                educational_markers.forEach(element=>{
+                    element.setMap(null);
+                });
+                markers.forEach(element=>{
+                    element.setMap(null);
+                });
             }
+
+            // adding the click listener for waterfall button to show only waterfalls 
             document.getElementById("waterfallbtn").addEventListener("click", function(){
                 waterFallFilter();
             });
+
+            // adding the click listener for educational button to show only educational institutions
             document.getElementById("educationalbtn").addEventListener("click", function(){
                 educationFilter();
             });
+
+            // show all the markers accept searched place marker
             document.getElementById("showallbtn").addEventListener("click", function(){
                 showall();
             });
 
+            // preparing for the info window.
             const infoWindow = new google.maps.InfoWindow();
+
+            
+            // fetching data about the educational institution and showing them on the map with the green markers 
+            // also adding those markers on the array names educational_markers.
             fetch("./data/educationalInstitutionData.json")
             .then(res => res.json())
             .then(async res =>{
                 await res.features.forEach( element => {
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)}
                     var info = `<div>
-                            <h1>${element.properties.NAME}</h1>
+                            <h4>${element.properties.NAME}</h4>
                             <p>${element.properties.ADDRESS}, ${element.properties.COMMUNITY}.</p>
                         </div>`;
                     const marker = new google.maps.Marker({
+                        animation: google.maps.Animation.DROP,
                         position: point,
                         icon: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png",
                         map: map,
@@ -114,16 +178,19 @@
                 });
             });
             
+            // fetching data about the waterfalls and showing them on the map with the green markers 
+            // also adding those markers on the array names waterfall_markers.
             fetch("./data/waterfallsData.json")
             .then(res => res.json())
             .then(res =>{
                 res.features.forEach( element => {
                     var point = {lat:parseFloat(element.properties.LATITUDE), lng: parseFloat(element.properties.LONGITUDE)};
                     var info = `<div>
-                            <h1>${element.properties.NAME}</h1>
+                            <h3>${element.properties.NAME}</h4>
                             <p>${element.properties.ADDRESS}, ${element.properties.COMMUNITY}.</p>
                         </div>`;
                     const marker = new google.maps.Marker({
+                        animation: google.maps.Animation.DROP,
                         position: point,
                         icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
                         map: map,
@@ -139,17 +206,8 @@
                     });
                 });
             });
-            function clearMarker(){
-                waterfall_markers.forEach(element => {
-                    element.setMap(null);
-                });
-                educational_markers.forEach(element=>{
-                    element.setMap(null);
-                });
-                markers.forEach(element=>{
-                    element.setMap(null);
-                });
-            }
+
+            // search input for the custom search for the places.
             const input = document.getElementById("pac-input");
             input.addEventListener("input", ()=>{
                 if(input.value.length == 0){
