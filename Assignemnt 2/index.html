@@ -118,8 +118,6 @@
             function educationFilter(){
                 clearSearchBox();
                 clearMarker();
-                directionsRenderer.setMap(null);
-                document.getElementById("sidebar").style.display = "none";
                 educational_markers.forEach(element => {
                     element.setMap(map);
                 });
@@ -129,8 +127,7 @@
             function waterFallFilter(){
                 clearSearchBox();
                 clearMarker();
-                directionsRenderer.setMap(null);
-                document.getElementById("sidebar").style.display = "none";
+                clearDirecion();
                 waterfall_markers.forEach(element => {
                     element.setMap(map);
                 });
@@ -141,8 +138,7 @@
                 clearMarker();
                 map.setZoom(12);
                 clearSearchBox();
-                document.getElementById("sidebar").style.display = "none";
-                directionsRenderer.setMap(null);
+                clearDirecion();
                 var location = new google.maps.LatLng(43.2387, -79.8881);
                 map.setCenter(location);
                 educational_markers.forEach(element => {
@@ -180,6 +176,10 @@
             function getDirectionClick(){
                 document.getElementById("sidebar").style.display = "block";
                 calculateAndDisplayRoute(directionsService, directionsRenderer);
+            }
+            function clearDirecion(){
+                directionsRenderer.setMap(null);
+                document.getElementById("sidebar").style.display = "none";
             }
             function calculateAndDisplayRoute(directionsService, directionsRenderer) {
                 const start = new google.maps.LatLng(userLocation[0], userLocation[1]);
@@ -236,7 +236,9 @@
                     });
                     educational_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
-                        document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        if(document.getElementById("getDirectionBtn").classList.contains("disabled")){
+                            document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        }
                         currentMarkerLocation = [];
                         currentMarkerLocation.push(parseFloat(element.properties.LATITUDE));
                         currentMarkerLocation.push(parseFloat(element.properties.LONGITUDE));
@@ -247,8 +249,7 @@
                         });
                     });
                     google.maps.event.addListener(infoWindow, "closeclick", function(){
-                        document.getElementById("sidebar").style.display = "none";
-                        directionsRenderer.setMap(null);
+                        clearDirecion();
                         document.getElementById("getDirectionBtn").classList.add("disabled");
                         currentMarkerLocation = [];
                     })
@@ -277,7 +278,9 @@
                     });
                     waterfall_markers.push(marker);
                     google.maps.event.addListener(marker, "click", function(){
-                        document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        if(document.getElementById("getDirectionBtn").classList.contains("disabled")){
+                            document.getElementById("getDirectionBtn").classList.remove("disabled");
+                        }
                         currentMarkerLocation = [];
                         currentMarkerLocation.push(parseFloat(element.properties.LATITUDE));
                         currentMarkerLocation.push(parseFloat(element.properties.LONGITUDE));
@@ -287,9 +290,8 @@
                             map,
                         });
                     });
-                    google.maps.event.addListener(infoWindow, "closeclick", function(){
-                        document.getElementById("sidebar").style.display = "none";
-                        directionsRenderer.setMap(null);
+                    google.maps.event.addListener(infoWindow, "closeclick", function(){                        clearDirecion();
+                        clearDirecion();
                         document.getElementById("getDirectionBtn").classList.add("disabled");
                         currentMarkerLocation = [];
                     })
@@ -349,7 +351,9 @@
                 });
                 markers.push(marker);
                 google.maps.event.addListener(marker, "click", function(){
-                    document.getElementById("getDirectionBtn").classList.remove("disabled");
+                    if(document.getElementById("getDirectionBtn").classList.contains("disabled")){
+                        document.getElementById("getDirectionBtn").classList.remove("disabled");
+                    }
                     currentMarkerLocation = [];
                     currentMarkerLocation.push(parseFloat(marker.getPosition().lat()));
                     currentMarkerLocation.push(parseFloat(marker.getPosition().lng()));
@@ -359,9 +363,8 @@
                         map,
                     });
                 });
-                google.maps.event.addListener(infoWindow, "closeclick", function(){
-                    document.getElementById("sidebar").style.display = "none";
-                    directionsRenderer.setMap(null);
+                google.maps.event.addListener(infoWindow, "closeclick", function(){                       clearDirecion();
+                    clearDirecion();
                     document.getElementById("getDirectionBtn").classList.add("disabled");
                     currentMarkerLocation = [];
                 })
