@@ -7,30 +7,6 @@ function App() {
   const [diceSide, setDiceSide] = useState(6);
   const [diceVal, setDiceVal] = useState([]);
 
-  
-  // roll btn click
-  var rollDice = ()=>{
-    // for(let i = 0; i<diceNumber; i++){
-    //   if(diceVal.length == diceNumber){
-    //     dices = diceVal;
-    //     for(let i = 0; i<diceNumber; i++){
-    //       let randomNumber = Math.floor(Math.random()*(diceSide))+1;
-    //       dices[i] = randomNumber;
-    //     }
-    //     setDiceVal(dices);
-    //   }else{
-        
-    //   }
-    // }
-    setDiceVal([]);
-    // var dices = [];
-      for(let i=0; i<diceNumber; i++){
-        let randomNumber = Math.floor(Math.random()*(diceSide))+1;
-        setDiceVal([...diceVal, randomNumber]);
-      }
-    // setDiceVal(dices);
-  };
-
   useEffect(()=>{
     rollDice();
   }, [diceNumber, diceSide]);
@@ -65,18 +41,25 @@ function App() {
   var resetBtnClick = ()=>{
     setDiceNumber(1);
     setDiceSide(6);
-    setDiceVal([])
   };
 
+  // roll btn click
+  var rollDice = ()=>{
+    var diceArr = [];
+    for(let i = 0; i < diceNumber; i++){
+      var rendomNumber = Math.floor(Math.random()*(diceSide))+1;
+      diceArr.push(rendomNumber);
+    }
+    setDiceVal(diceArr);
+  };
 
   var key = 0;
   return (
     <div className="App">
       <div className="DiceDisplay">
-        {console.log(diceVal)}
         {diceVal.map(element => 
           { key = key + 1;
-            return <Dice key={key} maxSide={diceSide} number={element}/>
+            return <Dice key={key+""+element} maxSide={diceSide} number={element}/>
           })
         }
       </div>
@@ -95,7 +78,7 @@ function App() {
           </div>
         </div>
         {/* roll btn */}
-        {/* <input type="button" value="Roll" className='btn' onClick={rollDice.bind(this)} /> */}
+        <input type="button" value="Roll" className='btn' onClick={rollDice.bind(this)} />
         {/* reset btn */}
         <input type="button" value="Reset" className='btn' onClick={resetBtnClick.bind(this)} />
         {/* sides btn */}
