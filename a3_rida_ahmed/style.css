@@ -40,3 +40,16 @@
     border-radius: 5px;
     font-size: large;
 }
+.Dice {
+    border: 1px solid purple;
+    border-radius: 5px;
+    padding: 1em 1.5em;
+    width: fit-content;
+    background-color: purple;
+    color: white;
+    margin: 0.5em;
+    font-weight: bold;
+}
+.Dice:hover{
+    cursor: pointer;
+}

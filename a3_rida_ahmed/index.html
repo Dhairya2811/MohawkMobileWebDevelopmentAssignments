@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 3</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Dice extends React.Component{
+            constructor(props){
+                super(props);
+                this.state = {
+                    displayNumber: props.number,
+                    maxSide: props.MaxSide
+                };
+            }
+            increaseNumberOnDice(){
+                if(this.state.displayNumber<this.state.maxSide){
+                    this.setState({displayNumber: this.state.displayNumber+1});
+                }else{
+                    this.setState({displayNumber: 1});
+                }
+            }
+            render(){
+                return(<div onClick={this.increaseNumberOnDice.bind(this)} className="Dice">
+                        {this.state.displayNumber}
+                    </div>);
+                // return(<div  className="Dice">
+                //         20
+                //     </div>);
+            }
+        }
+
+        class App extends React.Component{
+            constructor(props){
+                super(props);
+                this.state = {
+                    diceNumber: 1,
+                    diceSide: 6,
+                    diceVal: [Math.floor(Math.random()*(6))+1]
+                };
+            }
+
+            rollDice(){
+                var diceArr = [];
+                for(let i = 0; i< this.state.diceNumber; i++){
+                    var randomNumber = Math.floor(Math.random()*(this.state.diceSide))+1;
+                    diceArr.push(randomNumber);
+                }
+                this.setState({diceVal: diceArr});
+                console.log(diceArr);
+            }
+
+            increseDice() {
+                var diceNum = this.state.diceNumber + 1;
+
+                this.setState({diceNumber: diceNum});
+                // this.rollDice();
+            }
+
+            decreaseDice(){
+                if(this.state.diceNumber>1){
+                    this.setState({diceNumber: this.state.diceNumber-1});
+                    // this.rollDice();
+                }
+            }
+
+            increaseSide() {
+                if(this.state.diceSide<20){
+                    this.setState({diceSide: this.state.diceSide+1});
+                    // this.rollDice();
+                }
+            }
+
+            decreaseSide(){
+                if(this.state.diceSide>1){
+                    this.setState({diceSide: this.state.diceSide-1});
+                    // this.rollDice();
+                }
+            }
+
+            resetBtnClick(){
+                this.setState({diceNumber: 1, diceSide: 1});
+                this.rollDice();
+            }
+
+            render(){
+                return (<div className="App">
+                    <div className="DiceDisplay">
+                        {this.state.diceVal.map(element=>{
+                            return <Dice maxSide={this.state.diceSide} number={element} />
+                        })}
+                    </div>   
+                    <div id="bunchOfButtons">
+                        <div className="buttons">
+                            <div className="btnContainer">
+                                <button className="btn" id="increaseDice" onClick={this.increseDice.bind(this)} style={{transform: "rotate(-90deg)"}}>&#10140;</button>
+                            </div>
+                            <div className='numberDisplay'><strong>Number of dice:</strong> <span className='displayNumber'>{this.state.diceNumber}</span></div>
+                            <div className='btnContainer'>
+                                <button className='btn' id='decreaseDice' onClick={this.decreaseDice.bind(this)} style={{transform: "rotate(90deg)"}}>&#10140;</button>
+                            </div>
+                        </div>
+                        {/* roll btn */}
+                        <input type="button" value="Roll" className='btn' onClick={this.rollDice.bind(this)} />
+                        {/* reset btn */}
+                        <input type="button" value="Reset" className='btn' onClick={this.resetBtnClick.bind(this)} />
+                        {/* sides btn */}
+                        <div id="increaseSide" className='buttons'>
+                        <div className='btnContainer'>
+                            <button className='btn' onClick={this.increaseSide.bind(this)}  style={{transform: "rotate(-90deg)"}}>&#10140;</button>
+                        </div>
+                        <div className='numberDisplay'><strong>Number of side:</strong> <span className='displayNumber'>{this.state.diceSide}</span></div>
+                        <div className='btnContainer'>
+                            <button className='btn' onClick={this.decreaseSide.bind(this)}  style={{transform: "rotate(90deg)"}}>&#10140;</button>
+                        </div>
+                        </div>
+                    </div> 
+                </div>);
+            }
+        }
+        ReactDOM.render(<App /> ,document.getElementById("root"))
+    </script>
+</body>
+</html>
