@@ -40,7 +40,7 @@ function App() {
   // reset btn click
   var resetBtnClick = ()=>{
     setDiceNumber(1);
-    setDiceSide(6);
+    setDiceSide(1);
   };
 
   // roll btn click

@@ -1,3 +1,4 @@
+// StAuth10244: I Rida Ahmed, 000796446 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else."
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
