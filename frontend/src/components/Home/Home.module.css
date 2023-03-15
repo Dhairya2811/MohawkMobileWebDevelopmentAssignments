@@ -1,1 +1,7 @@
-.Home {}
+.Home {
+    margin: 0 10%;
+}
+.heading{
+    font-weight:500;
+    font-size: 30px;
+}

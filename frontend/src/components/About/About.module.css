@@ -1,1 +1,18 @@
-.About {}
+.About {
+    margin: 0 10%;
+}
+.heading{
+    font-weight:500;
+    font-size: 30px;
+}
+.subHeading{
+    font-weight:400;
+    font-size: 25px;
+    margin-left: 1em;
+}
+p{
+    font-weight:250;
+    font-size: 20px;
+    margin-left: 2em;
+
+}

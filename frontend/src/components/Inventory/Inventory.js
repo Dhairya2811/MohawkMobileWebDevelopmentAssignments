@@ -8,18 +8,27 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SendIcon from '@mui/icons-material/Send';
+import { OutlinedInput, TextField } from '@mui/material';
 
 
 const Inventory = ({ role }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [pets, setPets] = useState();
+  const [errorState, setErrorState] = useState(false);
   const location = useLocation();
   // fetches all pet data from the server
   useEffect(()=>{
+    fetchPet();
+  }, [location]);
+
+  var fetchPet = ()=>{
     setIsLoaded(false);
-    if(location.pathname == "/inventory"){
-      fetch("http://localhost:3001/api?act=getall")
+    fetch("http://localhost:3001/api?act=getall")
       .then(res => res.json())
       .then(
         (result) => {
@@ -27,8 +36,7 @@ const Inventory = ({ role }) => {
           setTimeout(()=>setIsLoaded(true), 100)
         }
       )
-    }
-  }, [location]);
+  };
 
   var search = (event)=>{
     setIsLoaded(false);
@@ -37,15 +45,56 @@ const Inventory = ({ role }) => {
     .then(res => res.json())
     .then(
       (result) => {
-        if(searchVal == ""){
-          setPets([]);
-        }else{
-          setPets(result);
-        }
+        setPets(result);
         setTimeout(()=>{
           setIsLoaded(true);
         }, 100);
       });
+  };
+
+  var deleteItem = (id)=>{
+    fetch("http://localhost:3001/api?act=delete&id="+id)
+    .then(res => res.json())
+    .then(
+      (result) => {
+        fetchPet();
+      }) 
+  };
+
+  var submitItem = ()=>{
+    var name = document.getElementById("name").value;
+    var description = document.getElementById("description").value;
+    var age = document.getElementById("age").value;
+    var price = document.getElementById("price").value;
+    if(name != "" && description != "" && age != "" && price != "" && !isNaN(parseFloat(price))){
+      if(!isEdit){
+        fetch("http://localhost:3001/api?act=add&animal="+name+"&description="+description+"&age="+age+"&price="+price)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            fetchPet();
+          }) 
+      }else{
+        var id = document.getElementById("id").value;
+        fetch("http://localhost:3001/api?act=update&id="+id+"&animal="+name+"&description="+description+"&age="+age+"&price="+price)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            fetchPet();
+          });
+      }  
+    }else{
+      setErrorState(true)
+    }
+  };
+
+  var editItem = (row)=>{
+    document.getElementById("id").value = row.id;
+    document.getElementById("name").value = row.animal;
+    document.getElementById("description").value = row.description;
+    document.getElementById("age").value = row.age;
+    document.getElementById("price").value = row.price;
+    setIsEdit(true);
   };
 
   var searchReturn = (result)=>{
@@ -59,6 +108,7 @@ const Inventory = ({ role }) => {
                 <TableCell align="center" colSpan={3}>Description</TableCell>
                 <TableCell align="center">Age</TableCell>
                 <TableCell align="center">Price</TableCell>
+                <TableCell align="center">Delete</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -72,6 +122,7 @@ const Inventory = ({ role }) => {
                   <TableCell colSpan={3}>{row.description}</TableCell>
                   <TableCell>{row.age}</TableCell>
                   <TableCell>{row.price}</TableCell>
+                  <TableCell><IconButton aria-label="delete" onClick={()=>deleteItem(row.id)}><DeleteIcon color="error"/></IconButton></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -95,9 +146,34 @@ const Inventory = ({ role }) => {
                     <TableCell align="center" colSpan={3}>Description</TableCell>
                     <TableCell align="center">Age</TableCell>
                     <TableCell align="center">Price</TableCell>
+                    <TableCell align="center">Delete</TableCell>
+                    <TableCell align="center">Edit</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  <TableRow>
+                    <TableCell>
+                      <OutlinedInput id="id" sx={{width: "5em"}} variant="filled" disabled />
+                    </TableCell>
+                    <TableCell>
+                      <OutlinedInput id="name" error={errorState} sx={{width: "7em"}} variant="filled"  />
+                    </TableCell>
+                    <TableCell colSpan={3}>
+                      <OutlinedInput id="description" error={errorState} variant="filled"  />
+                    </TableCell>
+                    <TableCell>
+                      <OutlinedInput id="age" error={errorState} sx={{width: "5em"}} variant="filled"  />
+                    </TableCell>
+                    <TableCell>
+                      <OutlinedInput id="price" error={errorState} sx={{width: "7em"}} variant="filled" />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton disabled aria-label="delete"><DeleteIcon disabled/></IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton id="submit" onClick={()=>submitItem()} aria-label="submit"><SendIcon color="success"/></IconButton>
+                    </TableCell>
+                  </TableRow>
                   {pets.map((row) => (
                     <TableRow
                       key={row.id} 
@@ -108,6 +184,8 @@ const Inventory = ({ role }) => {
                       <TableCell colSpan={3}>{row.description}</TableCell>
                       <TableCell>{row.age}</TableCell>
                       <TableCell>{row.price}</TableCell>
+                      <TableCell><IconButton aria-label="delete" onClick={()=>deleteItem(row.id)}><DeleteIcon color="error"/></IconButton></TableCell>
+                      <TableCell><IconButton aria-label="edit" onClick={()=>editItem(row)}><EditIcon color="primary"/></IconButton></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
