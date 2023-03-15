@@ -16,10 +16,10 @@ function App() {
                 <Navigationbar />
                 <div className="body">
                     <Routes>
-                            <Route exact path="/" element={<Home />}/>
-                            <Route exact path="/inventory" element={<Inventory role="inventory"/>}/>
-                            <Route exact path="/search" element={<Inventory role="search"/>}/>
-                            <Route exact path="/about" element={<About />}/>
+                      <Route exact path="/" element={<Home />}/>
+                      <Route exact path="/inventory" element={<Inventory role="inventory"/>}/>
+                      <Route exact path="/search" element={<Inventory role="search"/>}/>
+                      <Route exact path="/about" element={<About />}/>
                     </Routes>
                 </div>
             </div>
