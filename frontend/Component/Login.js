@@ -1,28 +1,61 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
-import { TextInput, Button } from '@react-native-material/core';
+import { Button } from '@react-native-material/core';
+import { Alert, TextField } from "@mui/material";
 
 export default function Login() {
-    const [res, setRes] = useState();
-    const [username, setUsername] = useState();
-    const [password, setPassword] = useState();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
+    const [errorMsgView, setErrorMsgVeiw] = useState(false);
 
-    fetch("http://localhost:3000/login")
-    .then(res => res.text())
-    .then(res => setRes(res));
+    const submitForm = ()=>{
+      if(username != "" && password != ""){
+        setErrorMsgVeiw(false);
+        setErrorMsg("");
+        var data = JSON.stringify({"username": username, "password": password});
+        fetch("http://localhost:3000/login", {
+          credentials: "same-origin",
+          method: "POST",
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: data,
+        })
+        .then(res => res.json())
+        .then(res => {
+          if(res.status == "failure"){
+            setErrorMsgVeiw(true);
+            setErrorMsg("Username and/or password incorrect.");
+          }else{
+            console.log("worked");
+          }
+        });
+      }else{
+        setErrorMsg("All fields must be completed");
+        setErrorMsgVeiw(true);
+      }
+    };
 
     return (
         <View style={styles.container}>
+          {errorMsgView ? <Alert style={styles.alert} severity="error">{errorMsg.toString()}</Alert> :<Text></Text> }
             <View style={styles.form}>
-                <TextInput
+                <Text style={styles.title}>
+                  Login
+                </Text>
+                <TextField
+                    variant="filled" 
                     label='User Name'
-                    onChange={setUsername}
+                    onChange={text => setUsername(text.target.value)}
                     style={styles.usernameText}
                 />
-                <TextInput
+                <TextField
+                    variant="filled" 
                     label='Password'
-                    onChange={setPassword}
-                    secureTextEntry={true}
+                    onChange={text => setPassword(text.target.value)}
+                    type='password'
                     style={styles.passwordText}
                 />
                 <View style={styles.buttons}>
@@ -30,12 +63,14 @@ export default function Login() {
                         variant='text'
                         title="Sign Up" 
                         color="#3377ff"
+                        onPress={()=>window.location.href = "/signup"}
                     />
                     <Button 
                         title="Submit" 
                         color="#3377ff"
                         tintColor='white'
                         titleStyle={styles.submitBtn}
+                        onPress={submitForm}
                     />
                 </View>
             </View>
@@ -56,12 +91,17 @@ const styles = StyleSheet.create({
     width: "50%",
     maxWidth: 500,
     minWidth: 200,
+  }, 
+  title: {
+    marginBottom: 30,
+    fontSize: 35,
+    textAlign: 'center'
   },
   usernameText: {
-
+    marginBottom: 10,
   },
   passwordText: {
-    marginVertical: 10
+    marginBottom: 10
   }, 
   buttons: {
     flex: 1,
@@ -70,5 +110,9 @@ const styles = StyleSheet.create({
   }, 
   submitBtn: {
     fontWeight: "bold"
-  } 
+  },
+  alert: {
+    marginTop: -64,
+    marginBottom: 15,
+  },
 });
