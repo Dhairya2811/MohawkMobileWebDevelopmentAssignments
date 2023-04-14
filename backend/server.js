@@ -3,6 +3,8 @@ const sqlite3 = require("sqlite3");
 const { open } = require("sqlite"); 
 const cors = require('cors');
 const app = express();
+const redis = require("redis");
+const client = redis.createClient();
 
 sqlite3.verbose();
 
@@ -51,10 +53,27 @@ app.post("/signup", async (req, res)=>{
 });
 
 app.post("/update", async (req, res)=>{
+    if(!client.isOpen){
+        client.connect();
+    }
     var username = req.body.username;
     var result = req.body.result;
-    res.send("worked");
+    var winners = JSON.parse(await client.get("winners"));
+    if(result == "correct"){
+        if(winners.length == 10){
+            winners.shift()
+        }
+        winners.push(""+username);
+        await client.set("winners", JSON.stringify(winners));
+    }
+    res.json( JSON.parse(await client.get("winners")).reverse());
 });
+
+process.on('SIGINT', () => {
+    client.quit();
+    process.exit();
+  });
+  
 
 app.listen(3000, 
     () => 

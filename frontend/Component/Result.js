@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Button } from "@mui/material";
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,7 @@ export default function Result() {
     const route = useRoute();
     const [result, setResult] = useState();
     const [username, setUsername] = useState();
+    const [winners, setWinners] = useState();
     const navigate = useNavigation();
 
     useEffect(()=>{
@@ -23,9 +24,9 @@ export default function Result() {
           },
           body: data,
         })
-        .then(res => res.text())
+        .then(res => res.json())
         .then(res => {
-          console.log(res);
+            setWinners(res);
         });
     }, [route]);
 
@@ -35,8 +36,15 @@ export default function Result() {
            <Button variant="contained" onClick={()=> navigate.navigate("/game", {"username": username})}>Next</Button>
        </View>
        <View style={styles.leaderBoard}>
-
-       </View>
+            <Text style={styles.heading}>
+                Leader Board
+            </Text>
+            <FlatList 
+                style={styles.winnerList}
+                data = {winners}
+                renderItem={({item})=> <Text style={styles.winnerStyle}> {item}</Text>}
+            />
+        </View>
     </View>);
 }
 
@@ -49,18 +57,38 @@ const styles = StyleSheet.create({
         marginHorizontal: "10%",
     },
     resultDiv:{
-        flex: 1,
+        flex: 0.25,
         width: "100%",
         alignItems: 'center',
         justifyContent: 'center',
     },
     result:{
-        fontSize: 20,
+        fontSize: 50,
         fontWeight: 'bold',
         marginBottom: 10,
     },
     leaderBoard:{
-        flex: 3,
-        backgroundColor: "yellow",
+        flex: 0.75,
+        width: "100%",
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    heading:{
+        fontSize: 30,
+        fontWeight: '700',
+    },
+    winnerStyle: {
+        padding: 10,
+        fontSize: 18,
+        height: 44,
+        backgroundColor: "#d9d9d9",
+        width: '100%',
+        marginTop: 10,
+        borderRadius: 5,
+    },
+    winnerList: {
+        width: '80%',
+        marginHorizontal: '10%',
+        textAlign: 'center',
     },
 });
