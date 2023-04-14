@@ -1,25 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native';
 import Login from "./Component/Login"
 import Signup from './Component/Signup';
-import { useState } from 'react';
+import Game from './Component/Game';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Result from "./Component/Result";
 
 export default function App() {
-  const [user, setUser] = useState();
-
-  var path = window.location.pathname;
+  
+  const Stack = createNativeStackNavigator();
   return (
-    <View style={styles.container}>
-      {path == "/signup" ? <Signup /> : 
-        path == "/" ? <Login /> : <View></View> }
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name = "/" component={Login} options={{title: 'Login'}}/>
+        <Stack.Screen name = "/signup" component={Signup} options={{title: 'Sign Up'}}/>
+        <Stack.Screen name = "/game" component={Game} options={{title: 'Game'}}/>
+        <Stack.Screen name = "/result" component={Result} options={{title: 'Result'}}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

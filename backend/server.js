@@ -1,6 +1,7 @@
 const express = require("express");
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite"); 
+const cors = require('cors');
 const app = express();
 
 sqlite3.verbose();
@@ -9,6 +10,8 @@ const db = open({
     filename: "Database.db",
     driver: sqlite3.Database
 });
+
+app.use(cors());
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -29,7 +32,6 @@ app.post("/login", async (req, res)=>{
     params = [username, password];
     (await db).all(sql, params)
     .then(data => {
-        console.log(data)
         if(data.length == 0){
             res.json({status: "failure"});
         }else{
@@ -46,6 +48,12 @@ app.post("/signup", async (req, res)=>{
     var password = req.body.password;
     (await db).run(sql, [username, password]);
     res.json({status: "success"});
+});
+
+app.post("/update", async (req, res)=>{
+    var username = req.body.username;
+    var result = req.body.result;
+    res.send("worked");
 });
 
 app.listen(3000, 

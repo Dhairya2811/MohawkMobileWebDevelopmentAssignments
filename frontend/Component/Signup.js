@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { Button } from '@react-native-material/core';
 import { TextField, Alert } from '@mui/material';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Login() {
+export default function Signup() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [errorMsgView, setErrorMsgVeiw] = useState(false);
+    const navigation = useNavigation();
 
     const submitForm = ()=>{
       if(confirmPassword == password && username != "" && password != "" && confirmPassword != ""){
@@ -27,7 +30,7 @@ export default function Login() {
         .then(res => res.json())
         .then(res => {
           if(res.status == "success"){
-            console.log("worked");
+            navigation.navigate('/game', {"username": username});
           }
         });
       }else if(username == "" || password == "" || confirmPassword == ""){

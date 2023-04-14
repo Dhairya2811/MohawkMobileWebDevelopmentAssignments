@@ -1,13 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { Button } from '@react-native-material/core';
 import { Alert, TextField } from "@mui/material";
+import { useNavigation } from '@react-navigation/native';
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [errorMsgView, setErrorMsgVeiw] = useState(false);
+    const navigate = useNavigation();
 
     const submitForm = ()=>{
       if(username != "" && password != ""){
@@ -29,7 +32,7 @@ export default function Login() {
             setErrorMsgVeiw(true);
             setErrorMsg("Username and/or password incorrect.");
           }else{
-            console.log("worked");
+            navigate.navigate("/game", {"username": username});
           }
         });
       }else{
@@ -63,7 +66,7 @@ export default function Login() {
                         variant='text'
                         title="Sign Up" 
                         color="#3377ff"
-                        onPress={()=>window.location.href = "/signup"}
+                        onPress={()=>navigation.navigate("/signup")}
                     />
                     <Button 
                         title="Submit" 
